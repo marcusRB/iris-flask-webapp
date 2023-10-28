@@ -15,4 +15,5 @@ RUN pip install gunicorn
 EXPOSE 5000 8080
 
 # Set the entrypoint command to run the application
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app"]
+# ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app"]
+ENTRYPOINT ["python", "wsgi:app"]
