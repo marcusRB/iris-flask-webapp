@@ -8,17 +8,6 @@
 #    Replace the value of the `ECR_REPOSITORY` environment variable in the workflow below with your repository's name.
 #    Replace the value of the `AWS_REGION` environment variable in the workflow below with your repository's region.
 #
-# 2. Create an ECS task definition, an ECS cluster, and an ECS service.
-#    For example, follow the Getting Started guide on the ECS console:
-#      https://us-east-2.console.aws.amazon.com/ecs/home?region=us-east-2#/firstRun
-#    Replace the value of the `ECS_SERVICE` environment variable in the workflow below with the name you set for the Amazon ECS service.
-#    Replace the value of the `ECS_CLUSTER` environment variable in the workflow below with the name you set for the cluster.
-#
-# 3. Store your ECS task definition as a JSON file in your repository.
-#    The format should follow the output of `aws ecs register-task-definition --generate-cli-skeleton`.
-#    Replace the value of the `ECS_TASK_DEFINITION` environment variable in the workflow below with the path to the JSON file.
-#    Replace the value of the `CONTAINER_NAME` environment variable in the workflow below with the name of the container
-#    in the `containerDefinitions` section of the task definition.
 #
 # 4. Store an IAM user access key in GitHub Actions secrets named `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
 #    See the documentation for each action used below for the recommended IAM policies for this IAM user,
@@ -66,10 +55,24 @@ jobs:
       run: |
         # Build a docker container and
         # push it to ECR so that it can
-        # be deployed to ECS.
-        echo "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
         docker build -t $ECR_REPOSITORY:latest -f config/Dockerfile .
         docker tag $ECR_REPOSITORY:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:latest
         docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:latest
         echo "image=$ECR_REPOSITORY:latest" >> $GITHUB_OUTPUT
-        
+    
+    - name: Deploy to App Runner Image
+      id: deploy-apprunner
+      uses: awslabs/amazon-app-runner-deploy@main
+      with:
+        service: app-runner-git-deploy-service
+        image: ${{ steps.build-image.outputs.image }}
+        access-role-arn: ${{ secrets.AWS_ROLE_ARN }}
+        region: ${{ vars.AWS_REGION }}
+        cpu : 0.5
+        memory : 1
+        # Deprecated: wait-for-service-stability: true
+        # The new way to control service stability timeout
+        wait-for-service-stability-seconds: 1200
+    
+    - name: App Runner URL
+      run: echo "App runner URL ${{ steps.deploy-apprunner.outputs.service-url }}"

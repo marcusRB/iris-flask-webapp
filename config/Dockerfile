@@ -6,9 +6,10 @@ WORKDIR /app
 
 # Copy the application files to the container
 COPY /src/. /app
-COPY /config/. /app/config
+COPY /config/requirements.txt /app/config/
 
 # Install the required Python packages
+RUN pip install --upgrade pip
 RUN pip install -r config/requirements.txt
 
 # Expose the necessary ports

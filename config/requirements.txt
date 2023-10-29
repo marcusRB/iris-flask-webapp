@@ -6,3 +6,5 @@ gunicorn
 requests
 joblib==1.2.0
 Flask-WTF==1.0.0
+Werkzeug~=3.0.0
+
