@@ -72,8 +72,4 @@ jobs:
         docker tag $ECR_REPOSITORY:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:latest
         docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:latest
         echo "image=$ECR_REPOSITORY:latest" >> $GITHUB_OUTPUT
-
-    - name: Upload Artifact to s3
-      working-directory: ${{ env.applicationfolder }}/target
-      run: aws s3 cp *.war s3://${{ env.S3BUCKET }}/
         
