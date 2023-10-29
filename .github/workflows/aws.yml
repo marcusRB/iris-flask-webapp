@@ -65,7 +65,7 @@ jobs:
       uses: awslabs/amazon-app-runner-deploy@main
       with:
         service: app-runner-git-deploy-service
-        image: ${{ steps.build-image.outputs.image }}
+        image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:latest
         access-role-arn: ${{ secrets.AWS_ROLE_ARN }}
         region: ${{ vars.AWS_REGION }}
         cpu : 0.5
