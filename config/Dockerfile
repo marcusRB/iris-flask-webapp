@@ -8,12 +8,12 @@ WORKDIR /app
 COPY . /app
 
 # Install the required Python packages
-RUN pip install -r requirements.txt
+RUN pip install -r config/requirements.txt
 RUN pip install gunicorn
 
 # Expose the necessary ports
 EXPOSE 5000 8080
 
 # Set the entrypoint command to run the application
-# ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app"]
-ENTRYPOINT ["python", "wsgi:app"]
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app"]
+# ENTRYPOINT ["python", "wsgi:app"]
