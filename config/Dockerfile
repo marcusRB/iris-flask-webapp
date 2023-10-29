@@ -1,14 +1,15 @@
 # Use the official Python base image
 FROM python:3.9-slim
 
-# Install the required Python packages
-RUN pip install -r config/requirements.txt
-
 # Create a directory for the application
 WORKDIR /app
 
 # Copy the application files to the container
 COPY /src/. /app
+COPY /config/. /app/config
+
+# Install the required Python packages
+RUN pip install -r config/requirements.txt
 
 # Expose the necessary ports
 EXPOSE 5000 8080
