@@ -35,6 +35,7 @@ env:
   AWS_REGION: ${{ vars.AWS_REGION }}                   # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: ${{ vars.AWS_ECR_REPOSITORY }}         # set this to your Amazon ECR repository name
   S3BUCKET: ${{ vars.S3_BUCKET }}
+  AWS_ACCESS_KEY_ID: ${{vars.AWS_ACCESS_KEY_ID }}
 
 jobs:
   deploy:
@@ -49,7 +50,7 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
 
@@ -67,10 +68,10 @@ jobs:
         # push it to ECR so that it can
         # be deployed to ECS.
         echo "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest -f config/Dockerfile .
-        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:latest $aws-access-key-id.dkr.ecr.us-east-1.amazonaws.com/$ECR_REGISTRY/$ECR_REPOSITORY:latest
-        docker push $aws-access-key-id.dkr.ecr.us-east-1.amazonaws.com/$ECR_REGISTRY/$ECR_REPOSITORY:latest
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> $GITHUB_OUTPUT
+        docker build -t $ECR_REPOSITORY:latest -f config/Dockerfile .
+        docker tag $ECR_REPOSITORY:latest $AWS_ACCESS_KEY_ID.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:latest
+        docker push $AWS_ACCESS_KEY_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:latest
+        echo "image=$ECR_REPOSITORY:latest" >> $GITHUB_OUTPUT
 
     - name: Upload Artifact to s3
       working-directory: ${{ env.applicationfolder }}/target
