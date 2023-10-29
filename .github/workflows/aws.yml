@@ -67,8 +67,8 @@ jobs:
         # push it to ECR so that it can
         # be deployed to ECS.
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f config/Dockerfile .
-        docker tag iris-webapp:latest $aws-access-key-id.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
-        docker push $aws-access-key-id.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+        docker tag iris-webapp:latest $aws-access-key-id.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:latest
+        docker push $aws-access-key-id.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:latest
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
     - name: Upload Artifact to s3
